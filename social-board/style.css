@@ -1,0 +1,364 @@
+<?php
+session_start();
+require_once 'db.php';
+if (!isset($_POST['phone']) && !isset($_SESSION['otp_sent'])) {
+&nbsp;&nbsp;&nbsp;&nbsp;unset($_SESSION['otp_sent']);
+&nbsp;&nbsp;&nbsp;&nbsp;unset($_SESSION['phone']);
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+&nbsp;&nbsp;<meta charset="UTF-8" />
+&nbsp;&nbsp;<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+&nbsp;&nbsp;<title>Social Board - Login</title>
+&nbsp;&nbsp;<link rel="stylesheet" href="style.css" />
+</head>
+<body class="login-bg">
+&nbsp;&nbsp;<div class="login-container">
+&nbsp;&nbsp;&nbsp;&nbsp;<div class="login-card">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="logo">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="logo-icon">SB</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h1>Social Board</h1>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p>Secure OTP Login</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if (isset($_SESSION['otp_sent']) && $_SESSION['otp_sent'] === true): ?>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="otp-modal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<form method="post" action="verify.php">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>Enter OTP sent to <strong><?php echo substr($_SESSION['phone'], -4); ?> xxxx</strong></label>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="otp" placeholder="— — — —" maxlength="4" required autofocus />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit">Verify</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="index.php" class="change-link">Change Number</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</form>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p style="color:#d32f2f; font-size:12px; margin-top:10px;">Demo OTP: <strong>1234</strong></p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php else: ?>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<form method="post" action="send_otp.php" class="phone-form">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>Phone Number</label>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="phone" placeholder="+91 98765 43210" maxlength="15" value="+91 9876543210" required />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit">Send OTP</button>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</form>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php endif; ?>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<footer>© 2025 Social Board</footer>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+&nbsp;&nbsp;</div>
+</body>
+</html>*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Montserrat',sans-serif}
+.login-bg{
+&nbsp;&nbsp;background:url('assets/baground.JPG') center/cover fixed;
+&nbsp;&nbsp;min-height:100vh;display:flex;align-items:center;justify-content:center;
+}
+.login-container{
+&nbsp;&nbsp;background:rgba(255,255,255,0.95);padding:40px;border-radius:20px;
+&nbsp;&nbsp;width:100%;max-width:400px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.2);
+}
+.logo{
+&nbsp;&nbsp;width:80px;height:80px;background:#1a73e8;color:white;font-weight:bold;
+&nbsp;&nbsp;font-size:32px;border-radius:16px;margin:0 auto 16px;display:flex;
+&nbsp;&nbsp;align-items:center;justify-content:center;
+}
+.login-container h1{font-size:28px;margin-bottom:8px;color:#1a73e8}
+.login-container p{color:#666;margin-bottom:24px}
+.login-container input{
+&nbsp;&nbsp;width:100%;padding:14px;margin:12px 0;border:1px solid #ddd;
+&nbsp;&nbsp;border-radius:12px;font-size:16px;
+}
+.login-container button{
+&nbsp;&nbsp;width:100%;padding:14px;background:#1a73e8;color:white;border:none;
+&nbsp;&nbsp;border-radius:12px;font-size:16px;cursor:pointer;
+}
+.change,.demo{display:block;margin-top:16px;color:#1a73e8;text-decoration:none;font-size:14px}
+.demo{color:#d32f2f}
+/* Dashboard */
+.dash-bg{
+&nbsp;&nbsp;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+&nbsp;&nbsp;min-height:100vh;color:white;padding:40px 20px;
+}
+.dash-bg.dark{
+&nbsp;&nbsp;filter:invert(1) hue-rotate(180deg);
+}
+.dashboard header{text-align:center;margin-bottom:40px}
+.dashboard h1{font-size:36px;margin-bottom:8px}
+.grid{
+&nbsp;&nbsp;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+&nbsp;&nbsp;gap:20px;max-width:1200px;margin:0 auto 80px;
+}
+.platform-card{
+&nbsp;&nbsp;background:rgba(255,255,255,0.1);border-radius:16px;padding:20px;
+&nbsp;&nbsp;text-decoration:none;color:white;transition:transform .3s;display:block;
+}
+.platform-card:hover{transform:translateY(-8px)}
+.platform-card img{width:40px;height:40px;margin-bottom:12px}
+.platform-card h3{font-size:20px;margin-bottom:12px}
+.followers{font-size:24px;font-weight:bold}
+.engagement{color:#4caf50;font-weight:bold}
+.dock{
+&nbsp;&nbsp;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+&nbsp;&nbsp;background:rgba(0,0,0,0.5);padding:12px 20px;border-radius:50px;
+&nbsp;&nbsp;display:flex;gap:16px;backdrop-filter:blur(10px);
+}
+.dock a img{width:40px;height:40px;border-radius:12px;transition:transform .3s}
+.dock a img:hover{transform:scale(1.2)}
+.theme-btn{
+&nbsp;&nbsp;position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.2);
+&nbsp;&nbsp;color:white;border:none;padding:10px 16px;border-radius:12px;cursor:pointer;
+&nbsp;&nbsp;backdrop-filter:blur(10px);font-size:14px;
+}
+/* ========================================
+&nbsp;&nbsp;&nbsp;Detail Page - Enhanced & Integrated
+&nbsp;&nbsp;&nbsp;======================================== */
+.detail-page {
+&nbsp;&nbsp;padding: 40px 20px;
+&nbsp;&nbsp;position: relative;
+&nbsp;&nbsp;min-height: 100vh;
+}
+.back-btn {
+&nbsp;&nbsp;position: absolute;
+&nbsp;&nbsp;top: 20px;
+&nbsp;&nbsp;left: 20px;
+&nbsp;&nbsp;color: white;
+&nbsp;&nbsp;text-decoration: none;
+&nbsp;&nbsp;font-weight: bold;
+&nbsp;&nbsp;font-size: 16px;
+&nbsp;&nbsp;display: flex;
+&nbsp;&nbsp;align-items: center;
+&nbsp;&nbsp;gap: 8px;
+&nbsp;&nbsp;transition: color 0.3s ease;
+}
+.back-btn:hover {
+&nbsp;&nbsp;color: #8b5cf6;
+}
+.back-btn::before {
+&nbsp;&nbsp;content: "←";
+&nbsp;&nbsp;font-size: 18px;
+}
+.detail-card {
+&nbsp;&nbsp;max-width: 900px;
+&nbsp;&nbsp;margin: 0 auto;
+&nbsp;&nbsp;background: rgba(255, 255, 255, 0.1);
+&nbsp;&nbsp;padding: 32px;
+&nbsp;&nbsp;border-radius: 20px;
+&nbsp;&nbsp;backdrop-filter: blur(12px);
+&nbsp;&nbsp;-webkit-backdrop-filter: blur(12px);
+&nbsp;&nbsp;border: 1px solid rgba(255, 255, 255, 0.1);
+&nbsp;&nbsp;text-align: center;
+&nbsp;&nbsp;box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.detail-card h1 {
+&nbsp;&nbsp;font-size: 32px;
+&nbsp;&nbsp;margin-bottom: 8px;
+&nbsp;&nbsp;background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+&nbsp;&nbsp;-webkit-background-clip: text;
+&nbsp;&nbsp;-webkit-text-fill-color: transparent;
+&nbsp;&nbsp;background-clip: text;
+}
+.detail-card .platform-subtitle {
+&nbsp;&nbsp;color: #aaa;
+&nbsp;&nbsp;font-size: 16px;
+&nbsp;&nbsp;margin-bottom: 24px;
+}
+/* Stats Grid */
+.stats-grid {
+&nbsp;&nbsp;display: grid;
+&nbsp;&nbsp;grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+&nbsp;&nbsp;gap: 16px;
+&nbsp;&nbsp;margin: 32px 0;
+}
+.stat-box {
+&nbsp;&nbsp;background: rgba(255, 255, 255, 0.1);
+&nbsp;&nbsp;padding: 18px;
+&nbsp;&nbsp;border-radius: 14px;
+&nbsp;&nbsp;backdrop-filter: blur(8px);
+&nbsp;&nbsp;border: 1px solid rgba(255, 255, 255, 0.08);
+&nbsp;&nbsp;transition: all 0.3s ease;
+}
+.stat-box:hover {
+&nbsp;&nbsp;transform: translateY(-4px);
+&nbsp;&nbsp;background: rgba(255, 255, 255, 0.15);
+&nbsp;&nbsp;box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.stat-box.big {
+&nbsp;&nbsp;grid-column: span 4;
+&nbsp;&nbsp;font-size: 26px;
+&nbsp;&nbsp;padding: 24px;
+&nbsp;&nbsp;background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+&nbsp;&nbsp;border: 1px solid rgba(139, 92, 246, 0.3);
+}
+.label {
+&nbsp;&nbsp;display: block;
+&nbsp;&nbsp;font-size: 14px;
+&nbsp;&nbsp;color: #94a3b8;
+&nbsp;&nbsp;text-transform: uppercase;
+&nbsp;&nbsp;letter-spacing: 0.5px;
+&nbsp;&nbsp;margin-bottom: 6px;
+}
+.value {
+&nbsp;&nbsp;display: block;
+&nbsp;&nbsp;font-size: 24px;
+&nbsp;&nbsp;font-weight: 800;
+&nbsp;&nbsp;margin-top: 4px;
+&nbsp;&nbsp;color: #ffffff;
+}
+.value.accent {
+&nbsp;&nbsp;background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+&nbsp;&nbsp;-webkit-background-clip: text;
+&nbsp;&nbsp;-webkit-text-fill-color: transparent;
+&nbsp;&nbsp;background-clip: text;
+}
+/* Tabs */
+.tabs {
+&nbsp;&nbsp;display: flex;
+&nbsp;&nbsp;justify-content: center;
+&nbsp;&nbsp;gap: 12px;
+&nbsp;&nbsp;margin: 32px 0 24px;
+&nbsp;&nbsp;border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+&nbsp;&nbsp;padding-bottom: 12px;
+}
+.tab {
+&nbsp;&nbsp;background: none;
+&nbsp;&nbsp;border: none;
+&nbsp;&nbsp;color: #94a3b8;
+&nbsp;&nbsp;font-size: 16px;
+&nbsp;&nbsp;font-weight: 600;
+&nbsp;&nbsp;padding: 10px 20px;
+&nbsp;&nbsp;cursor: pointer;
+&nbsp;&nbsp;border-radius: 10px;
+&nbsp;&nbsp;transition: all 0.3s ease;
+&nbsp;&nbsp;position: relative;
+}
+.tab:hover {
+&nbsp;&nbsp;color: white;
+&nbsp;&nbsp;background: rgba(255, 255, 255, 0.1);
+}
+.tab.active {
+&nbsp;&nbsp;color: #8b5cf6;
+&nbsp;&nbsp;background: rgba(139, 92, 246, 0.15);
+}
+.tab.active::after {
+&nbsp;&nbsp;content: '';
+&nbsp;&nbsp;position: absolute;
+&nbsp;&nbsp;bottom: -13px;
+&nbsp;&nbsp;left: 50%;
+&nbsp;&nbsp;width: 50%;
+&nbsp;&nbsp;height: 3px;
+&nbsp;&nbsp;background: #8b5cf6;
+&nbsp;&nbsp;border-radius: 2px;
+&nbsp;&nbsp;transform: translateX(-50%);
+}
+/* Chart Container */
+.chart-container {
+&nbsp;&nbsp;background: rgba(0, 0, 0, 0.3);
+&nbsp;&nbsp;padding: 24px;
+&nbsp;&nbsp;border-radius: 16px;
+&nbsp;&nbsp;margin-top: 24px;
+&nbsp;&nbsp;backdrop-filter: blur(10px);
+&nbsp;&nbsp;border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.chart-header {
+&nbsp;&nbsp;display: flex;
+&nbsp;&nbsp;justify-content: space-between;
+&nbsp;&nbsp;align-items: center;
+&nbsp;&nbsp;margin-bottom: 16px;
+}
+.chart-header h3 {
+&nbsp;&nbsp;font-size: 18px;
+&nbsp;&nbsp;font-weight: 600;
+&nbsp;&nbsp;color: white;
+}
+.badge {
+&nbsp;&nbsp;background: rgba(34, 197, 94, 0.2);
+&nbsp;&nbsp;color: #22c55e;
+&nbsp;&nbsp;font-size: 13px;
+&nbsp;&nbsp;font-weight: 600;
+&nbsp;&nbsp;padding: 4px 10px;
+&nbsp;&nbsp;border-radius: 999px;
+&nbsp;&nbsp;border: 1px solid rgba(34, 197, 94, 0.4);
+}
+canvas#trafficChart {
+&nbsp;&nbsp;height: 300px !important;
+&nbsp;&nbsp;width: 100% !important;
+}
+/* Dock (Detail Page) */
+.detail-page .dock {
+&nbsp;&nbsp;position: fixed;
+&nbsp;&nbsp;bottom: 20px;
+&nbsp;&nbsp;left: 50%;
+&nbsp;&nbsp;transform: translateX(-50%);
+&nbsp;&nbsp;background: rgba(0, 0, 0, 0.5);
+&nbsp;&nbsp;padding: 12px 20px;
+&nbsp;&nbsp;border-radius: 50px;
+&nbsp;&nbsp;display: flex;
+&nbsp;&nbsp;gap: 16px;
+&nbsp;&nbsp;backdrop-filter: blur(10px);
+&nbsp;&nbsp;border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.detail-page .dock a img {
+&nbsp;&nbsp;width: 40px;
+&nbsp;&nbsp;height: 40px;
+&nbsp;&nbsp;border-radius: 12px;
+&nbsp;&nbsp;transition: transform 0.3s ease;
+&nbsp;&nbsp;filter: brightness(0) invert(1);
+}
+.detail-page .dock a:hover img {
+&nbsp;&nbsp;transform: scale(1.2);
+&nbsp;&nbsp;filter: brightness(1) invert(0);
+}
+/* Responsive */
+@media (max-width: 768px) {
+&nbsp;&nbsp;.detail-page {
+&nbsp;&nbsp;&nbsp;&nbsp;padding: 20px 16px;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.back-btn {
+&nbsp;&nbsp;&nbsp;&nbsp;top: 16px;
+&nbsp;&nbsp;&nbsp;&nbsp;left: 16px;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.detail-card {
+&nbsp;&nbsp;&nbsp;&nbsp;padding: 24px;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.stats-grid {
+&nbsp;&nbsp;&nbsp;&nbsp;grid-template-columns: 1fr 1fr;
+&nbsp;&nbsp;&nbsp;&nbsp;gap: 12px;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.stat-box.big {
+&nbsp;&nbsp;&nbsp;&nbsp;grid-column: span 2;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.value {
+&nbsp;&nbsp;&nbsp;&nbsp;font-size: 20px;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.tabs {
+&nbsp;&nbsp;&nbsp;&nbsp;flex-direction: column;
+&nbsp;&nbsp;&nbsp;&nbsp;align-items: center;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.tab {
+&nbsp;&nbsp;&nbsp;&nbsp;width: 100%;
+&nbsp;&nbsp;&nbsp;&nbsp;max-width: 200px;
+&nbsp;&nbsp;}
+}
+@media (max-width: 480px) {
+&nbsp;&nbsp;.stats-grid {
+&nbsp;&nbsp;&nbsp;&nbsp;grid-template-columns: 1fr;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;.stat-box.big {
+&nbsp;&nbsp;&nbsp;&nbsp;grid-column: span 1;
+&nbsp;&nbsp;}
+&nbsp;&nbsp;canvas#trafficChart {
+&nbsp;&nbsp;&nbsp;&nbsp;height: 220px !important;
+&nbsp;&nbsp;}
+}
+.back-btn {
+&nbsp;&nbsp;position: absolute;
+&nbsp;&nbsp;top: 20px;
+&nbsp;&nbsp;left: 20px;
+&nbsp;&nbsp;color: white;
+&nbsp;&nbsp;text-decoration: none;
+&nbsp;&nbsp;font-weight: bold;
+&nbsp;&nbsp;font-size: 16px;
+&nbsp;&nbsp;display: flex;
+&nbsp;&nbsp;align-items: center;
+&nbsp;&nbsp;gap: 8px;
+&nbsp;&nbsp;z-index: 10;
+&nbsp;&nbsp;transition: color .3s;
+}
+.back-btn:hover { color: #8b5cf6; }
+.back-btn::before { content: "Back"; font-size: 18px; }
