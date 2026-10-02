@@ -19,6 +19,7 @@ Open the project folder in VS Code and run:
 
 ```bash
 python -m http.server 8000
+```
 
 ## Screenshots
 
@@ -26,7 +27,7 @@ python -m http.server 8000
 ![Login Page](Login.png)
 
 ### Dashboard – Light Mode
-![Dashboard Light Mode](Light Mode.png)
+![Dashboard Light Mode](Light%20Mode.png)
 
 ### Dashboard – Dark Mode
-![Dashboard Dark Mode](Dark Mode.png)
+![Dashboard Dark Mode](Dark%20Mode.png)
