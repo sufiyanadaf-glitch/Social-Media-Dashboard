@@ -23,11 +23,10 @@ python -m http.server 8000
 ## Screenshots
 
 ### Login Page
-
-"C:\Users\FAIJAL\Pictures\Screenshots\Login.png"
+![Login Page](Login.png)
 
 ### Dashboard – Light Mode
-"C:\Users\FAIJAL\Pictures\Screenshots\Light Mode.png"
+![Dashboard Light Mode](Light%20Mode.png)
 
 ### Dashboard – Dark Mode
-"C:\Users\FAIJAL\Pictures\Screenshots\Dark Mode.png"
+![Dashboard Dark Mode](Dark%20Mode.png)
