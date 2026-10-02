@@ -1,0 +1,89 @@
+/* Theme tokens: space-separated RGB channels so Tailwind opacity (e.g. bg-panel/90) works. */
+:root {
+  --ink: 20 33 61;      /* text */
+  --fog: 238 241 244;   /* page background */
+  --panel: 255 255 255; /* cards */
+  --bar: 20 33 61;      /* header and login hero */
+  --teal: 15 139 141;
+  --onteal: 255 255 255;
+  --coral: 214 69 51;
+  --amber: 242 165 65;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --ink: 226 232 244;
+  --fog: 9 14 28;
+  --panel: 20 29 50;
+  --bar: 12 19 38;
+  --teal: 52 200 196;
+  --onteal: 6 18 32;
+  --coral: 255 122 100;
+  --amber: 242 165 65;
+  color-scheme: dark;
+}
+
+body { -webkit-font-smoothing: antialiased; }
+
+/* Page background: image files in /assets, swapped by theme.
+   To use your own photo, replace assets/bg-light.svg and assets/bg-dark.svg
+   (or change the url() paths below, e.g. url("../assets/my-photo.jpg")). */
+:root { --bg-img: url("../assets/bg-light.svg"); }
+:root[data-theme="dark"] { --bg-img: url("../assets/bg-dark.svg"); }
+
+.app-bg {
+  background-color: rgb(var(--fog));
+  background-image: var(--bg-img);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Login hero background */
+.hero-bg {
+  background-color: rgb(var(--bar));
+  background-image:
+    linear-gradient(rgb(var(--bar) / .35), rgb(var(--bar) / .35)),
+    url("../assets/bg-dark.svg");
+  background-size: cover;
+  background-position: center;
+}
+
+.chart-box { position: relative; width: 100%; }
+
+.live-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #2ED3A5; box-shadow: 0 0 0 0 rgba(46, 211, 165, .6);
+  animation: pulse 1.8s infinite;
+}
+.live-dot.paused { background: #F2A541; animation: none; }
+@keyframes pulse {
+  70% { box-shadow: 0 0 0 8px rgba(46, 211, 165, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 211, 165, 0); }
+}
+
+.chip {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .3rem .75rem; border-radius: 999px; font-size: .85rem; font-weight: 500;
+  border: 1px solid rgb(var(--ink) / .25);
+  background: rgb(var(--panel)); color: rgb(var(--ink)); cursor: pointer;
+}
+.chip:hover { border-color: rgb(var(--ink)); }
+.chip-on { background: rgb(var(--ink)); color: rgb(var(--fog)); border-color: rgb(var(--ink)); }
+.chip-dot {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  margin-right: .5rem; vertical-align: baseline;
+}
+.chip .chip-dot { margin-right: 0; }
+.chip-on .chip-dot { box-shadow: 0 0 0 1.5px rgb(var(--fog)); }
+
+.sort-btn { font-weight: 600; cursor: pointer; }
+.sort-btn:hover { color: rgb(var(--teal)); }
+
+button:focus-visible, select:focus-visible, input:focus-visible {
+  outline: 2px solid #F2A541; outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+}
